@@ -36,7 +36,9 @@ run();
 
 function generateNextReleaseTag() {
     try {
-        var releases  =  octokit.repos.listReleases({
+        const { owner, repo } = context.context.repo;
+
+        var releases = octokit.repos.listReleases({
             owner: owner,
             repo: repo,
             });
