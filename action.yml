@@ -5,6 +5,9 @@ inputs:
     description: 'The solution being built (Dashboard.Server or Dashboard.Web)'
     required: true
     default: 'Dashboard.Server'
+  github_token:
+    description: "Github secrets token"
+    required: true
 outputs:
   version: # id of output
     description: 'The version'

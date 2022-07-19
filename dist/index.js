@@ -13418,9 +13418,11 @@ function run() {
         }
 
         let nextVersion = getNextVersionTag(tagprefix,{ prerelease });
+
+        let testvariable = generateNextReleaseTag();
         console.log(`nextv is ${nextVersion}`);
         setOutput("version", nextVersion);
-
+        
 
     } catch (error) {
         setFailed(error.message);
@@ -13428,7 +13430,24 @@ function run() {
 }
 
 run();
-
+const generateNextReleaseTag = async () => {
+    try {
+        const github_token = core.getInput("github_token");
+        const octokit = github.getOctokit(github_token);
+        const { owner, repo } = github.context.repo;
+        const response = await octokit.repos.getLatestRelease({
+            owner,
+            repo,
+        });
+        const { tag_name: oldReleaseTag } = response.data;
+        const newReleaseTag = getNewReleaseTag(oldReleaseTag);
+        console.log(`Previous Release Tag: ${oldReleaseTag}`);
+        console.log(`New Release Tag: ${newReleaseTag}`);
+        core.exportVariable("release_tag", newReleaseTag);
+    } catch (error) {
+        core.setFailed(error.message);
+    }
+};
 function getCurrentTag() {
 
     exec("git fetch --tags");
