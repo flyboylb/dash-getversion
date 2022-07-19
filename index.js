@@ -2,6 +2,8 @@ const { setFailed, getInput, setOutput} = require("@actions/core");
 const { context } = require("@actions/github");
 const { exec } = require("@actions/exec");
 const semver = require("semver");
+const { Octokit } = require("@octokit/rest");
+const octokit = new Octokit()
 
 function run() {
     try {
@@ -34,17 +36,19 @@ run();
 
 function generateNextReleaseTag() {
     try {
-        const github_token = getInput("github_token");
-        const octokit = context.getOctokit(github_token);
-        const { owner, repo } = context.context.repo;
-        const response = octokit.repos.getLatestRelease({
-            owner,
-            repo,
-        });
-        const { tag_name: oldReleaseTag } = response.data;
-        //  const newReleaseTag = getNewReleaseTag(oldReleaseTag);
-        console.log(`Previous Release Tag: ${oldReleaseTag}`);
-        console.log(`New Release Tag: ${newReleaseTag}`);
+        var releases  =  octokit.repos.listReleases({
+            owner: owner,
+            repo: repo,
+            });
+        releases = releases.data;
+
+
+        if (releases.length) {
+            setOutput('version', releases[0].tag_name);
+            
+        } else {
+            setFailed("No valid releases");
+        }
         
     } catch (error) {
         setFailed(error.message);
