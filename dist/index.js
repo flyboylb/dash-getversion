@@ -13434,8 +13434,8 @@ function getCurrentTag() {
     exec("git fetch --tags");
     console.log(`CONTEXT SHA ${context.sha}`);
     // First Check if there is already a release tag at the head...
-    let currentTags =  execGetOutput(`git tag --points-at ${context.sha}`);
-
+    let currentTags = execGetOutput(`git describe --tags --abbrev=0`);
+    console.log(`DESCRIBE IS ${currentTags}`);
     return currentTags.map(processVersion).filter(Boolean)[0];
 }
 
