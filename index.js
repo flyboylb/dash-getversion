@@ -5,11 +5,11 @@ const semver = require("semver");
 
 function run() {
     try {
-        
+        let prerelease = getInput("prerelease", { required: false });
         let tagprefix = getInput("buildtagprefix", { required: true });
         console.log(`tagprefix is ${tagprefix}`);
         let currentVersionTag = getCurrentTag();
-        console.log(`Currrent TAG is ${currentVersionTag}`);
+        console.log(`Currrent TAG is ${tagprefix}`);
         if (currentVersionTag) {
             console.log(`Already at version ${currentVersionTag}, skipping...`);
             setOutput("version", currentVersionTag);
@@ -31,9 +31,9 @@ run();
 function getCurrentTag() {
 
     exec("git fetch --tags");
-
+    console.log(`CONTEXT SHA ${context.sha}`);
     // First Check if there is already a release tag at the head...
-    let currentTags = execGetOutput(`git describe --tags --abbrev=0`);
+    let currentTags =  execGetOutput(`git tag --points-at ${context.sha}`);
 
     return currentTags.map(processVersion).filter(Boolean)[0];
 }
