@@ -13441,7 +13441,7 @@ function generateNextReleaseTag() {
             repo,
         });
         const { tag_name: oldReleaseTag } = response.data;
-      //  const newReleaseTag = getNewReleaseTag(oldReleaseTag);
+        //  const newReleaseTag = getNewReleaseTag(oldReleaseTag);
         console.log(`Previous Release Tag: ${oldReleaseTag}`);
         console.log(`New Release Tag: ${newReleaseTag}`);
         
