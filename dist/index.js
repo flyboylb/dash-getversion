@@ -13407,8 +13407,10 @@ function run() {
         let prerelease = getInput("prerelease", { required: false });
         let tagprefix = getInput("buildtagprefix", { required: true });
         console.log(`tagprefix is ${tagprefix}`);
+
         let currentVersionTag = getCurrentTag();
-        console.log(`Currrent TAG is ${tagprefix}`);
+        console.log(`Currrent TAG is ${currentVersionTag}`);
+
         if (currentVersionTag) {
             console.log(`Already at version ${currentVersionTag}, skipping...`);
             setOutput("version", currentVersionTag);
