@@ -47,7 +47,7 @@ function generateNextReleaseTag() {
         console.log(`New Release Tag: ${newReleaseTag}`);
         
     } catch (error) {
-        core.setFailed(error.message);
+        setFailed(error.message);
     }
 };
 function getCurrentTag() {
