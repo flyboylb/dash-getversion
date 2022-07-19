@@ -35,8 +35,8 @@ run();
 function generateNextReleaseTag() {
     try {
         const github_token = getInput("github_token");
-        const octokit = conext.getOctokit(github_token);
-        const { owner, repo } = conext.context.repo;
+        const octokit = context.getOctokit(github_token);
+        const { owner, repo } = context.context.repo;
         const response = octokit.repos.getLatestRelease({
             owner,
             repo,
