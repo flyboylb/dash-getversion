@@ -13397,22 +13397,6 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-////const core = require('@actions/core');
-////const github = require('@actions/github');
-
-////try {
-////    // `who-to-greet` input defined in action metadata file
-////    const nameToGreet = core.getInput('who-to-greet');
-////    console.log(`Hello ${nameToGreet}!`);
-////    const time = (new Date()).toTimeString();
-////    core.setOutput("time", time);
-////    // Get the JSON webhook payload for the event that triggered the workflow
-////    const payload = JSON.stringify(github.context.payload, undefined, 2)
-////    console.log(`The event payload: ${payload}`);
-////} catch (error) {
-////    core.setFailed(error.message);
-////}
-
 const { setFailed, getInput, setOutput} = __nccwpck_require__(5006);
 const { context } = __nccwpck_require__(6211);
 const { exec } = __nccwpck_require__(6273);
@@ -13420,12 +13404,11 @@ const semver = __nccwpck_require__(3029);
 
 function run() {
     try {
-        let prerelease = getInput("prerelease", { required: false });
-        let mine = "";
+        
         let tagprefix = getInput("buildtagprefix", { required: true });
         console.log(`tagprefix is ${tagprefix}`);
         let currentVersionTag = getCurrentTag();
-
+        console.log(`Currrent TAG is ${currentVersionTag}`);
         if (currentVersionTag) {
             console.log(`Already at version ${currentVersionTag}, skipping...`);
             setOutput("version", currentVersionTag);
@@ -13445,6 +13428,7 @@ function run() {
 run();
 
 function getCurrentTag() {
+
     exec("git fetch --tags");
 
     // First Check if there is already a release tag at the head...
@@ -13461,9 +13445,7 @@ function getCurrentTag() {
         .filter(Boolean)
         .sort((a, b) => a.localeCompare(b));
 
-    return prerelease
-        ? getPrereleaseVersion(previousVersionTags, prerelease)
-        : getNextDateVersion(tagprefix, previousVersionTags);
+    return getNextDateVersion(tagprefix, previousVersionTags);
 }
 
 function getNextDateVersion(tagprefix, previousVersionTags) {
@@ -13481,30 +13463,8 @@ function getNextDateVersion(tagprefix, previousVersionTags) {
     return outputvar;
 }
 
-function getPrereleaseVersion(previousVersionTags, prerelease) {
-    let nextVersion = getNextDateVersion(previousVersionTags);
-    let nextVersionParts = nextVersion.split(".");
-
-    let prereleaseVersion = 0;
-    while (
-        _tagExists(nextVersionParts, previousVersionTags, [
-            prerelease,
-            prereleaseVersion,
-        ])
-    ) {
-        prereleaseVersion++;
-    }
-
-    return `${nextVersion}-${prerelease}.${prereleaseVersion}`;
-}
-
-function _tagExists(tagParts, previousVersionTags, prereleaseParts) {
+function _tagExists(tagParts, previousVersionTags) {
     let newTag = tagParts.join(".");
-
-    if (prereleaseParts) {
-        let [prerelease, prereleaseVersion] = prereleaseParts;
-        newTag = `${newTag}-${prerelease}.${prereleaseVersion}`;
-    }
 
     return previousVersionTags.find((tag) => tag === newTag);
 }
@@ -13517,14 +13477,13 @@ function processVersion(version) {
     let {
         major,
         minor,
-        patch,
-        prerelease,
+        day,
         version: parsedVersion,
     } = semver.parse(version);
 
     let { year: currentYear, month: currentMonth, day: currentDay } = getDateParts();
 
-    if (major !== currentYear || minor !== currentMonth) {
+    if (major !== currentYear || minor !== currentMonth || day !== currentDay) {
         return false;
     }
 
